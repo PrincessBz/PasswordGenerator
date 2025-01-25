@@ -3,10 +3,22 @@
 const process = require("node:process");
 const arguments = process.argv.slice(2);
 
+let passwordLength = 8;
+let includeLowercase = true;
+let includeUppercase = false;
+let includeNumbers = false;
+
 // Function to generate a random password
 
-function generatePassword(length, includeLowercase) {
+function generatePassword(
+  length,
+  includeLowercase,
+  includeUppercase,
+  includeNumbers
+) {
   const lowercaseChars = "abcdefghijklmnopqrstuvwxyz";
+  const uppercaseChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  const numberChars = "0123456789";
 
   if (length < 8) {
     return `(password length must be at least 8)`;
@@ -15,6 +27,14 @@ function generatePassword(length, includeLowercase) {
   let characters = "";
   if (includeLowercase) {
     characters += lowercaseChars;
+  }
+
+  if (includeUppercase) {
+    characters += uppercaseChars;
+  }
+
+  if (includeNumbers) {
+    characters += numberChars;
   }
 
   if (characters.length === 0) {
@@ -30,16 +50,15 @@ function generatePassword(length, includeLowercase) {
   return password;
 }
 
-let passwordLength = 8;
-let includeLowercase = true;
-
 // Function to display the help message
 
 function printHelpMessage() {
   console.log(`
         Usage:
-        --length, -1   Set Password length (minimum: 8, default: 8)
-        --help, -h     Prints the help message
+        --length, -l      Set Password length (minimum: 8, default: 8)
+        --uppercase, -u   Include uppercase letters
+        --numbers, -n     Include numbers
+        --help, -h        Prints the help message
         `);
 }
 
@@ -52,9 +71,13 @@ for (let i = 0; i < arguments.length; i++) {
       passwordLength = value;
       i++;
     } else {
-      console.error("Error: Length should be 8 or more");
+      console.error("Error: Length must be a number and 8 or more");
       return;
     }
+  } else if (arguments[i] === "--uppercase" || arguments[i] === "-u") {
+    includeUppercase = true;
+  } else if (arguments[i] === "--numbers" || arguments[i] === "-n") {
+    includeNumbers = true;
   } else if (arguments[i] === "--help" || arguments[i] === "-h") {
     printHelpMessage();
     return;
@@ -64,6 +87,11 @@ for (let i = 0; i < arguments.length; i++) {
   }
 }
 
-const password = generatePassword(passwordLength, includeLowercase);
+const password = generatePassword(
+  passwordLength,
+  includeLowercase,
+  includeUppercase,
+  includeNumbers
+);
 
 console.log(`Generated password: ${password}`);
